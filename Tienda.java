@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class Tienda {
     public static final int tamaño = 4;
     private int numeroProducto;
-    private double IVA, valorFinal, valorTotal;
+    private double IVA, valorFinal, valorTotal, aumento;
     private String nombreTienda, Nombre, atributos, productoMenosVendido, productoMasVendido, tipo;
     private final Scanner sc = new Scanner(System.in);
     public final static String ProductoEnTienda[][] = new String[6][4];
@@ -71,12 +71,10 @@ public class Tienda {
         System.out.println(ProductoEnTienda[0][2] + ", " + ProductoEnTienda[1][2] + ", " + ProductoEnTienda[2][2] + ", " + ProductoEnTienda[3][2] + ", " + ProductoEnTienda[4][2]+ ", " + ProductoEnTienda[5][2]);
         System.out.println(ProductoEnTienda[0][3] + ", " + ProductoEnTienda[1][3] + ", " + ProductoEnTienda[2][3] + ", " + ProductoEnTienda[3][3] + ", " + ProductoEnTienda[4][3]+ ", " + ProductoEnTienda[5][3]);
     }
-
     public String[][] getProducto() {
         System.out.println("Los productos en tienda son: " + Arrays.deepToString(ProductoEnTienda));
         return ProductoEnTienda;
     }
-    
     public void ProductoMenosVendido(){
         if(Integer.parseInt(ProductoEnTienda[1][0])<Integer.parseInt(ProductoEnTienda[1][1]) && Integer.parseInt(ProductoEnTienda[1][0])<Integer.parseInt(ProductoEnTienda[1][2]) && Integer.parseInt(ProductoEnTienda[1][0])<Integer.parseInt(ProductoEnTienda[1][3]))
             productoMenosVendido = ProductoEnTienda[0][0];
@@ -87,8 +85,7 @@ public class Tienda {
         else
             productoMenosVendido = ProductoEnTienda[0][3];
         System.out.println("El producto menos vendido es: " + productoMenosVendido);
-    }    
-    
+    }
     public void ProductoMasVendido(){
         if(Integer.parseInt(ProductoEnTienda[1][0])>Integer.parseInt(ProductoEnTienda[1][1]) && Integer.parseInt(ProductoEnTienda[1][0])>Integer.parseInt(ProductoEnTienda[1][2]) && Integer.parseInt(ProductoEnTienda[1][0])>Integer.parseInt(ProductoEnTienda[1][3]))
             productoMasVendido = ProductoEnTienda[0][0];
@@ -105,7 +102,7 @@ public class Tienda {
     }
     public void AumentarValorUnitario(){
         for(int i=0; i<=3; i++){
-            System.out.println("El precio base era de: " + ProductoEnTienda[4][i]);//[4][i]
+            System.out.println("El precio base era de: " + ProductoEnTienda[4][i]);
             int productotemporal = Integer.parseInt(ProductoEnTienda[4][i]);
             if(productotemporal < 1000){
                 ProductoEnTienda[4][i] = Integer.toString((int) (productotemporal + (productotemporal * 0.01)));
@@ -175,7 +172,6 @@ public class Tienda {
         }
         System.out.println("El total de ventas en la Tienda es de: " + valorTotal);
     }
-
     public void ValorDeIVA(){
         System.out.println("Para Supermercado el IVA es del 4%, para droguería 12% y para papelería 16%");
         System.out.print("Seleccione el numero del producto al que quiere visualizar con IVA: ");
@@ -226,5 +222,23 @@ public class Tienda {
         if (decision == 1){
             ProductoEnTienda[4][numeroProducto] = String.valueOf(valorFinal);
         }
+    }
+    public void ReglaTipoProducto(){
+        System.out.print("Seleccione el numero del producto al que quiere aplicarle la regla: ");
+        numeroProducto = sc.nextInt();
+        switch(ProductoEnTienda[5][numeroProducto]){
+            case "1"->this.aumento = 0.03;// Supermercado
+            case "2"->this.aumento = 0.01;// Droguería
+            case "3"->this.aumento = 0.02;// Papelería
+            case "4"->this.aumento = 0.08; //Ropa
+        }
+        switch(ProductoEnTienda[5][numeroProducto]){
+            case "1"->System.out.print("El producto es de tipo Supermercado, se aumenta el precio un 3%");// Supermercado
+            case "2"->System.out.print("El producto es de tipo Droguería, se aumenta el precio un 1%");// Droguería
+            case "3"->System.out.print("El producto es de tipo Papelería, se aumenta el precio un 2%");// Papelería
+            case "4"->System.out.print("El producto es de tipo ropa, se aumenta el precio un 8%"); //Ropa
+        }
+        double valorBaseTemporal = Double.parseDouble(ProductoEnTienda[5][numeroProducto]);
+        ProductoEnTienda[4][numeroProducto] = Double.toString(valorBaseTemporal + (valorBaseTemporal*aumento));
     }
 }
