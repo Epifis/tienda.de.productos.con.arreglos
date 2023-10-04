@@ -13,15 +13,19 @@ public class TiendaDeProductos {
         tienda1 = new Tienda();
         return tienda1;
     }
-    public static Producto[] CrearArregloAMano(){
+    public static Producto[] CrearArregloAMano(Tienda tienda1){
         Scanner scanner = new Scanner(System.in);
 
-        // Pedir al usuario que ingrese el tamaño de la matriz
-        System.out.print("Ingrese el número de productos: ");
-        int numProductos = Integer.parseInt(scanner.nextLine());
-
+        System.out.println("Ingrese el máximo de productos que podría agregar a futuro");
+        int maximo = scanner.nextInt();
+        tienda1.setMaximo(maximo);
+        
+        System.out.print("Ingrese el número de productos que va a agregar ahora: ");
+        int numProductos = scanner.nextInt();
+        tienda1.setActual(numProductos);
+            
         // Crear la matriz para almacenar la información de los productos
-        Producto[] productos = new Producto[numProductos];
+        Producto[] productos = new Producto[maximo];
 
         // Bucle para ingresar la información de cada producto
         for (int i = 0; i < numProductos; i++) {
@@ -48,7 +52,7 @@ public class TiendaDeProductos {
             // Crear un objeto Producto y almacenar la información en la matriz
             productos[i] = new Producto(nombre, tipo, cantidadVendida, cantidadActual, cantidadMinima, precioPorUnidad);
         }
-
+        
         return productos;
     }
      /**
@@ -75,12 +79,16 @@ public class TiendaDeProductos {
             System.out.println("5. Verificar cantidad mínima");
             System.out.println("6. Realizar una venta");
             System.out.println("7. Calcular valor del inventario");
-            System.out.println("9. Salir");
+            System.out.println("8. Visualizar el precio promedio de los productos");
+            System.out.println("9. Calcular el dinero en caja para cada tipo de producto");
+            System.out.println("10. Agregar productos");
+            System.out.println("11. Salir");
             System.out.print("Ingrese su opción: ");
             opcion = Integer.parseInt(sc.nextLine());
             switch (opcion) {
                 case 0 ->{
-                    CrearArregloAMano();
+                    CrearArregloAMano(tienda1);
+                    break;
                 }
                 case 1 -> {
                     Producto menosVendido = tienda1.ProductoMenosVendido(productos);
@@ -116,10 +124,17 @@ public class TiendaDeProductos {
                 case 7 -> {
                     tienda1.CalcularValorDelInventario(productos);
                 }
-                case 9 -> System.out.println("Saliendo del programa...");
+                case 8 ->{
+                    tienda1.PrecioPromedioProductos(productos);
+                }
+                case 10 ->{
+                    System.out.println("Ingrese el producto");
+                    tienda1.AgregarProductos(productos);
+                }
+                case 11 -> System.out.println("Saliendo del programa...");
                 default -> System.out.println("Opción no válida. Intente nuevamente.");
             }
-        } while (opcion != 0);
+        } while (opcion != 11);
         System.out.println("Sesión terminada.");
         
     }
