@@ -1,75 +1,24 @@
-package tiendadeproductos;
-
-import java.util.Scanner;
+package tienda.de.productos.con.arreglos;
 
 /**
  *
  * @author Alexandra Tinjaca
  */
+
+import java.util.Scanner;
+
 public class TiendaDeProductos {
+    private Tienda tienda;
+    private Scanner scanner;
 
-    public static Tienda CrearTienda(){
-        Tienda tienda1;
-        tienda1 = new Tienda();
-        return tienda1;
+    public TiendaDeProductos() {
+        scanner = new Scanner(System.in);
     }
-    public static Producto[] CrearArregloAMano(Tienda tienda1){
-        Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Ingrese el máximo de productos que podría agregar a futuro");
-        int maximo = scanner.nextInt();
-        tienda1.setMaximo(maximo);
-        
-        System.out.print("Ingrese el número de productos que va a agregar ahora: ");
-        int numProductos = scanner.nextInt();
-        tienda1.setActual(numProductos);
-            
-        // Crear la matriz para almacenar la información de los productos
-        Producto[] productos = new Producto[maximo];
+    public void ejecutar() {
+        int opcion = -1;
 
-        // Bucle para ingresar la información de cada producto
-        for (int i = 0; i < numProductos; i++) {
-            System.out.println("Ingrese los detalles del producto " + (i + 1) + ":");
-
-            System.out.print("Nombre: ");
-            String nombre = scanner.nextLine();
-
-            System.out.print("Tipo: ");
-            String tipo = scanner.nextLine();
-
-            System.out.print("Cantidad vendida: ");
-            int cantidadVendida = Integer.parseInt(scanner.nextLine());
-
-            System.out.print("Cantidad actual: ");
-            int cantidadActual = Integer.parseInt(scanner.nextLine());
-
-            System.out.print("Cantidad mínima: ");
-            int cantidadMinima = Integer.parseInt(scanner.nextLine());
-
-            System.out.print("Precio por unidad: ");
-            double precioPorUnidad = Double.parseDouble(scanner.nextLine());
-
-            // Crear un objeto Producto y almacenar la información en la matriz
-            productos[i] = new Producto(nombre, tipo, cantidadVendida, cantidadActual, cantidadMinima, precioPorUnidad);
-        }
-        
-        return productos;
-    }
-     /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        int opcion;
-        Scanner sc = new Scanner(System.in);
-        
-        Producto[] productos;
-        productos = new Producto[1];
-        
-        Tienda tienda1;
-        tienda1 = new Tienda();
-        
-        CrearTienda();
-        do {
+        while (opcion != 11) {
             System.out.println("---- Menú de Opciones ----");
             System.out.println("0. Crear la lista de productos");
             System.out.println("1. Producto menos vendido");
@@ -84,59 +33,109 @@ public class TiendaDeProductos {
             System.out.println("10. Agregar productos");
             System.out.println("11. Salir");
             System.out.print("Ingrese su opción: ");
-            opcion = Integer.parseInt(sc.nextLine());
+
+            opcion = scanner.nextInt();
+
             switch (opcion) {
-                case 0 ->{
-                    CrearArregloAMano(tienda1);
+                case 0:
+                    crearListaProductos();
                     break;
-                }
-                case 1 -> {
-                    Producto menosVendido = tienda1.ProductoMenosVendido(productos);
+
+                case 1:
+                    Producto menosVendido = tienda.ProductoMenosVendido();
                     System.out.println("El producto menos vendido es: " + menosVendido.getNombre());
-                }
-                case 2 -> {
-                    Producto masVendido = tienda1.ProductoMasVendido(productos);
-                    System.out.println("El producto más vendido es: " + masVendido.getNombre());
-                }
-                case 3 -> {
-                    System.out.print("Ingrese el índice del producto para verificar su tipo: ");
-                    int indiceVerificarTipo = Integer.parseInt(sc.nextLine());
-                        Producto productoVerificar = productos[indiceVerificarTipo];
-                        String tipoProductoVerificado = tienda1.verificarTipoProducto(productoVerificar);
-                        System.out.println("El producto en el índice " + indiceVerificarTipo + " es de tipo: " + tipoProductoVerificado);
                     break;
-                }
-                case 4 -> {
-                    tienda1.mostrarProductos(productos);
-                }
-                case 5 -> {
+
+                case 2:
+                    Producto masVendido = tienda.ProductoMasVendido();
+                    System.out.println("El producto más vendido es: " + masVendido.getNombre());
+                    break;
+
+                case 3:
+                    System.out.print("Ingrese el índice del producto para verificar su tipo: ");
+                    int indiceVerificarTipo = scanner.nextInt();
+                    String tipoProductoVerificado = tienda.verificarTipoProducto(indiceVerificarTipo);
+                    System.out.println("El producto en el índice " + indiceVerificarTipo + " es de tipo: " + tipoProductoVerificado);
+                    break;
+
+                case 4:
+                    tienda.mostrarProductos();
+                    break;
+
+                case 5:
                     System.out.print("Ingrese el índice del producto: ");
-                    int indiceVerificarCantidad = Integer.parseInt(sc.nextLine());
-                    tienda1.verificarCantidadMinima(productos, indiceVerificarCantidad);
-                }
-                case 6 -> {
+                    int indiceVerificarCantidad = scanner.nextInt();
+                    tienda.verificarCantidadMinima(indiceVerificarCantidad);
+                    break;
+
+                case 6:
                     System.out.print("Ingrese el índice del producto para realizar la venta: ");
-                    int indiceRealizarVenta = Integer.parseInt(sc.nextLine());
+                    int indiceRealizarVenta = scanner.nextInt();
                     System.out.print("Ingrese la cantidad de unidades que desea comprar: ");
-                    int cantidadAComprar = Integer.parseInt(sc.nextLine());
-                    tienda1.realizarVenta(productos, indiceRealizarVenta, cantidadAComprar);
-                }
-                case 7 -> {
-                    tienda1.CalcularValorDelInventario(productos);
-                }
-                case 8 ->{
-                    tienda1.PrecioPromedioProductos(productos);
-                }
-                case 10 ->{
-                    System.out.println("Ingrese el producto");
-                    tienda1.AgregarProductos(productos);
-                }
-                case 11 -> System.out.println("Saliendo del programa...");
-                default -> System.out.println("Opción no válida. Intente nuevamente.");
+                    int cantidadAComprar = scanner.nextInt();
+                    tienda.realizarVenta(indiceRealizarVenta, cantidadAComprar);
+                    break;
+
+                case 7:
+                    tienda.CalcularValorDelInventario();
+                    break;
+
+                case 8:
+                    tienda.PrecioPromedioProductos();
+                    break;
+
+                case 9:
+                    tienda.DineroEnCajaPorTipo();
+                    break;
+
+                case 10:
+                    agregarProducto();
+                    break;
+
+                case 11:
+                    System.out.println("Saliendo del programa.");
+                    break;
+
+                default:
+                    System.out.println("Opción no válida. Intente nuevamente.");
+                    break;
             }
-        } while (opcion != 11);
-        System.out.println("Sesión terminada.");
-        
+        }
     }
-    
+
+    private void crearListaProductos() {
+        System.out.print("Ingrese la capacidad máxima del arreglo: ");
+        int capacidadMaxima = scanner.nextInt();
+        tienda = new Tienda(capacidadMaxima);
+        System.out.println("Lista de productos creada.");
+    }
+
+    private void agregarProducto() {
+        if (tienda == null) {
+            System.out.println("Primero cree la lista de productos.");
+        } else {
+            System.out.println("Ingrese los detalles del producto:");
+            System.out.print("Nombre: ");
+            scanner.nextLine();  // Consume the newline character
+            String nombre = scanner.nextLine();
+            System.out.print("Tipo: ");
+            String tipo = scanner.next();
+            System.out.print("Cantidad vendida: ");
+            int cantidadVendida = scanner.nextInt();
+            System.out.print("Cantidad actual: ");
+            int cantidadActual = scanner.nextInt();
+            System.out.print("Cantidad mínima: ");
+            int cantidadMinima = scanner.nextInt();
+            System.out.print("Precio por unidad: ");
+            double precioPorUnidad = scanner.nextDouble();
+
+            Producto producto = new Producto(nombre, tipo, cantidadVendida, cantidadActual, cantidadMinima, precioPorUnidad);
+            tienda.agregarProducto(producto);
+        }
+    }
+
+    public static void main(String[] args) {
+        TiendaDeProductos tiendaDeProductos = new TiendaDeProductos();
+        tiendaDeProductos.ejecutar();
+    }
 }
