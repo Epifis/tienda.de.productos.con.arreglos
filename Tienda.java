@@ -1,4 +1,4 @@
-package tiendadeproductos;
+package tienda.de.productos.con.arreglos;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -8,43 +8,30 @@ import java.util.Scanner;
  * @author Kotaro
  */
 public class Tienda {
-    private int maximo=0, actual=0;
-    
-    public Tienda(){
+    private Producto[] productos;
+    private int cantidadProductos;
+
+    public Tienda(int capacidad) {
+        productos = new Producto[capacidad];
+        cantidadProductos = 0;
     }
-    public void AgregarProductos(Producto[] productos){
-        Scanner scanner = new Scanner (System.in);
-        if (actual < this.maximo){
-            System.out.println("Ingrese los detalles del producto:");
 
-            System.out.print("Nombre: ");
-            String nombre = scanner.nextLine();
+    public Tienda() {
+    }
 
-            System.out.print("Tipo: ");
-            String tipo = scanner.nextLine();
-
-            System.out.print("Cantidad vendida: ");
-            int cantidadVendida = Integer.parseInt(scanner.nextLine());
-
-            System.out.print("Cantidad actual: ");
-            int cantidadActual = Integer.parseInt(scanner.nextLine());
-
-            System.out.print("Cantidad mínima: ");
-            int cantidadMinima = Integer.parseInt(scanner.nextLine());
-
-            System.out.print("Precio por unidad: ");
-            double precioPorUnidad = Double.parseDouble(scanner.nextLine());
-            Producto productoNuevo = new Producto(nombre, tipo, cantidadVendida, cantidadActual, cantidadMinima, precioPorUnidad);
-            productos[actual] = productoNuevo;
-            this.actual++;
+    public void agregarProducto(Producto producto) {
+        if (cantidadProductos < productos.length) {
+            productos[cantidadProductos] = producto;
+            cantidadProductos++;
+        } else {
+            System.out.println("No se puede agregar más productos. La capacidad máxima ha sido alcanzada.");
         }
-        else
-            System.out.println("No se pueden agregar más productos, haz alcanzado el máximo.");
     }
-    public Producto ProductoMenosVendido(Producto[] productos) {
-        Producto menosVendido = productos[0];  // Suponemos que el primer producto es el menos vendido inicialmente
 
-        for (int i = 1; i < productos.length; i++) {
+    public Producto ProductoMenosVendido() {
+        Producto menosVendido = productos[0];
+
+        for (int i = 1; i < cantidadProductos; i++) {
             if (productos[i].getCantidadVendida() < menosVendido.getCantidadVendida()) {
                 menosVendido = productos[i];
             }
@@ -52,137 +39,139 @@ public class Tienda {
 
         return menosVendido;
     }
-    public Producto ProductoMasVendido(Producto[] productos) {
-    Producto masVendido = productos[0];  // Suponemos que el primer producto es el más vendido inicialmente
 
-    for (int i = 1; i < productos.length; i++) {
-        if (productos[i].getCantidadVendida() > masVendido.getCantidadVendida()) {
-            masVendido = productos[i];
+    public Producto ProductoMasVendido() {
+        Producto masVendido = productos[0];
+
+        for (int i = 1; i < cantidadProductos; i++) {
+            if (productos[i].getCantidadVendida() > masVendido.getCantidadVendida()) {
+                masVendido = productos[i];
+            }
         }
+
+        return masVendido;
     }
 
-    return masVendido;
-    }
-    public String verificarTipoProducto(Producto producto) {
-            String tipo = producto.getTipo();
-            tipo= switch (tipo) {
+    public String verificarTipoProducto(int indice) {
+        if (indice >= 0 && indice < cantidadProductos) {
+            String tipo = productos[indice].getTipo();
+            return switch (tipo) {
                 case "1" -> "Supermercado";
                 case "2" -> "Droguería";
                 case "3" -> "Papelería";
                 default -> "Desconocido";
             };
-        return tipo;
+        } else {
+            return "Índice de producto no válido.";
         }
-    public void mostrarProductos(Producto[] productos) {
-            System.out.println("Los productos almacenados en la tienda son: " + Arrays.deepToString(productos));
     }
-    public void verificarCantidadMinima(Producto[] productos, int indice) {
-        if (indice >= 0 && indice < productos.length) {
+
+    public void mostrarProductos() {
+        for (int i = 0; i < cantidadProductos; i++) {
+            System.out.println("Producto " + (i + 1) + ": " + productos[i]);
+        }
+    }
+
+    public void verificarCantidadMinima(int indice) {
+        if (indice >= 0 && indice < cantidadProductos) {
             Producto producto = productos[indice];
             if (producto.getCantidadActual() >= producto.getCantidadMinima()) {
                 System.out.println("La cantidad actual es mayor o igual a la cantidad mínima.");
             } else {
                 System.out.println("La cantidad actual es menor que la cantidad mínima. Se debe hacer un pedido.");
-                HacerPedido(productos, indice);
+                HacerPedido(indice);
             }
         } else {
             System.out.println("Índice de producto no válido.");
         }
     }
+
     public static double calcularValorIVA(Producto producto) {
-            double iva;
-            iva = switch (producto.getTipo()) {
-                case "1" -> 0.03;
-                case "2" -> 0.02;
-                case "3" -> 0.13;
-                default -> 0.0;
-            }; // Supermercado
-            // Droguería
-            // Papelería
-            // Valor por defecto si el tipo no es válido
-            return iva;
-        }
-    public void realizarVenta(Producto[] productos, int indice, int cantidadAComprar) {
-        if (indice >= 0 && indice < productos.length) {
+        return switch (producto.getTipo()) {
+            case "1" -> 0.03;
+            case "2" -> 0.02;
+            case "3" -> 0.13;
+            default -> 0.0;
+        };
+    }
+
+    public void realizarVenta(int indice, int cantidadAComprar) {
+        if (indice >= 0 && indice < cantidadProductos) {
             Producto producto = productos[indice];
             if (producto.getCantidadActual() >= producto.getCantidadMinima()) {
                 double precioConIVA = producto.getPrecioPorUnidad() * cantidadAComprar * calcularValorIVA(producto);
-                double totalVenta = producto.getPrecioPorUnidad()* cantidadAComprar + precioConIVA;
+                double totalVenta = producto.getPrecioPorUnidad() * cantidadAComprar + precioConIVA;
                 producto.setCantidadVendida(producto.getCantidadVendida() + cantidadAComprar);
                 producto.setCantidadActual(producto.getCantidadActual() - cantidadAComprar);
                 System.out.println("Venta realizada correctamente.");
                 System.out.println("Total de la venta (con IVA): $" + totalVenta);
             } else {
-                System.out.println("La cantidad solicitada supera la cantidad actual en inventario, se reabastecera el inventario,"
+                System.out.println("La cantidad solicitada supera la cantidad actual en inventario, se reabastecerá el inventario,"
                         + " se le hará la venta del producto y se hará el pedido en bodega.");
-                HacerPedido(productos, indice);
+                HacerPedido(indice);
                 producto.setCantidadVendida(producto.getCantidadVendida() + cantidadAComprar);
             }
         } else {
             System.out.println("Índice de producto no válido.");
         }
     }
-    public void HacerPedido(Producto[] productos, int indice){
-        Producto producto = productos[indice];
-        producto.setCantidadActual(producto.getCantidadMinima());
-        System.out.println("Ahora la cantidad actual del inventario es de: " + producto.getCantidadActual());
+
+    public void HacerPedido(int indice) {
+        if (indice >= 0 && indice < cantidadProductos) {
+            Producto producto = productos[indice];
+            producto.setCantidadActual(producto.getCantidadMinima());
+            System.out.println("Ahora la cantidad actual del inventario es de: " + producto.getCantidadActual());
+        } else {
+            System.out.println("Índice de producto no válido.");
+        }
     }
-    public void CalcularValorDelInventario(Producto[] productos){
-        int cantTotalInventario = 0, valorTemporalCant;
-        double valorTemporalPrecio, valorTotalInventario = 0;
-        
-         for (int i = 1; i < productos.length; i++) {
+
+    public void CalcularValorDelInventario() {
+        int cantTotalInventario = 0;
+        double valorTotalInventario = 0;
+
+        for (int i = 0; i < cantidadProductos; i++) {
             cantTotalInventario += productos[i].getCantidadActual();
-            valorTemporalCant = productos[i].getCantidadActual();
-            valorTemporalPrecio = productos[i].getPrecioPorUnidad();
-            valorTotalInventario += (valorTemporalCant * valorTemporalPrecio);
+            valorTotalInventario += (productos[i].getCantidadActual() * productos[i].getPrecioPorUnidad());
         }
-        System.out.println("En inventario hay " + cantTotalInventario + "productos en total" + 
-                "\n su valor Total es de $" + valorTotalInventario);
+
+        System.out.println("En inventario hay " + cantTotalInventario + " productos en total" +
+                "\nSu valor total es de $" + valorTotalInventario);
     }
-    public void PrecioPromedioProductos(Producto[] productos){
-        double valorTemporalPrecio = 0, precioPromedio;
-        
-        for (Producto producto : productos) { //Aqui se hizo la prueba con for-loop
-            valorTemporalPrecio += producto.getPrecioPorUnidad();
+
+    public void PrecioPromedioProductos() {
+        double valorTemporalPrecio = 0;
+        for (int i = 0; i < cantidadProductos; i++) {
+            valorTemporalPrecio += productos[i].getPrecioPorUnidad();
         }
-        precioPromedio = valorTemporalPrecio / productos.length;
-        System.out.println("El precio promedio en la tienda es de " + precioPromedio);
+
+        double precioPromedio = valorTemporalPrecio / cantidadProductos;
+        System.out.println("El precio promedio en la tienda es de $" + precioPromedio);
     }
-    //Calcular el dinero en caja para cada tipo de producto
-    public void DineroEnCajaPorTipo(Producto[] productos){
+
+    public void DineroEnCajaPorTipo() {
         double dineroCaja1 = 0, dineroCaja2 = 0, dineroCaja3 = 0;
         int cantTipo1 = 0, cantTipo2 = 0, cantTipo3 = 0;
-        
-        for (Producto producto : productos) {
-            switch (producto.getTipo()) {
+
+        for (int i = 0; i < cantidadProductos; i++) {
+            switch (productos[i].getTipo()) {
                 case "1" -> {
-                    cantTipo1 += producto.getCantidadVendida();
-                    dineroCaja1 += (producto.getPrecioPorUnidad() * producto.getCantidadVendida());
+                    cantTipo1 += productos[i].getCantidadVendida();
+                    dineroCaja1 += (productos[i].getPrecioPorUnidad() * productos[i].getCantidadVendida());
                 }
                 case "2" -> {
-                    cantTipo2 += producto.getCantidadVendida();
-                    dineroCaja2 += (producto.getPrecioPorUnidad() * producto.getCantidadVendida());
+                    cantTipo2 += productos[i].getCantidadVendida();
+                    dineroCaja2 += (productos[i].getPrecioPorUnidad() * productos[i].getCantidadVendida());
                 }
                 case "3" -> {
-                    cantTipo3 += producto.getCantidadVendida();
-                    dineroCaja3 += (producto.getPrecioPorUnidad() * producto.getCantidadVendida());
+                    cantTipo3 += productos[i].getCantidadVendida();
+                    dineroCaja3 += (productos[i].getPrecioPorUnidad() * productos[i].getCantidadVendida());
                 }
             }
         }
-        
-        System.out.println("En tipo 1 hay " + cantTipo1 + " productos, y la cantidad de dinero en caja por tipo es de: " + dineroCaja1);
-        System.out.println("En tipo 2 hay " + cantTipo2 + " productos, y la cantidad de dinero en caja por tipo es de: " + dineroCaja2);
-        System.out.println("En tipo 2 hay " + cantTipo3 + " productos, y la cantidad de dinero en caja por tipo es de: " + dineroCaja3);
-        
-    }
 
-    public void setMaximo(int maximo) {
-        this.maximo = maximo;
+        System.out.println("En tipo 1 hay " + cantTipo1 + " productos, y la cantidad de dinero en caja por tipo es de: $" + dineroCaja1);
+        System.out.println("En tipo 2 hay " + cantTipo2 + " productos, y la cantidad de dinero en caja por tipo es de: $" + dineroCaja2);
+       
     }
-
-    public void setActual(int actual) {
-        this.actual = actual;
-    }
-    
 }
